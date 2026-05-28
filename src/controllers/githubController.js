@@ -60,25 +60,27 @@ exports.analyzeProfile = async (req, res) => {
     });
 
   } catch (error) {
-    if (error.response?.status === 404) {
-      return res.status(404).json({
-        message: "GitHub user not found",
-      });
-    }
+  console.log("🔥 FULL ERROR:", error);
 
-    res.status(500).json({
-      error: error.message,
-    });
-  }
+  return res.status(500).json({
+    error: error.message || "Unknown error",
+    details: error.toString(),
+  });
+}
 };
 
 exports.getAllProfiles = async (req, res) => {
   try {
     const [results] = await db.query("SELECT * FROM github_profiles");
     res.json(results);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (error) {
+  console.log("🔥 FULL ERROR:", error);
+
+  return res.status(500).json({
+    error: error.message || "Unknown error",
+    details: error.toString(),
+  });
+}
 };
 
 exports.getSingleProfile = async (req, res) => {
@@ -97,7 +99,12 @@ exports.getSingleProfile = async (req, res) => {
     }
 
     res.json(results[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (error) {
+  console.log("🔥 FULL ERROR:", error);
+
+  return res.status(500).json({
+    error: error.message || "Unknown error",
+    details: error.toString(),
+  });
+}
 };
