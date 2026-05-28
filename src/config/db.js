@@ -8,14 +8,13 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
   port: Number(process.env.DB_PORT),
 
-  connectTimeout: 20000, // ✅ IMPORTANT FIX
-
-  ssl: {
-    rejectUnauthorized: false, // ✅ REQUIRED for Railway
-  },
-
   waitForConnections: true,
   connectionLimit: 10,
+  connectTimeout: 20000,
+
+  ssl: {
+    rejectUnauthorized: false, // CRITICAL FOR AIVEN + RENDER
+  },
 });
 
 module.exports = pool.promise();

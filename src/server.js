@@ -3,9 +3,6 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
-// ⚠️ DB import ONLY if needed
-// const db = require("./config/db");
-
 const githubRoutes = require("./routes/githubRoutes");
 
 const app = express();
