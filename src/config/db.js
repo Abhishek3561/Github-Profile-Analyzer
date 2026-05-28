@@ -10,10 +10,9 @@ const pool = mysql.createPool({
 
   waitForConnections: true,
   connectionLimit: 10,
-  connectTimeout: 20000,
 
   ssl: {
-    rejectUnauthorized: false, // CRITICAL FOR AIVEN + RENDER
+    rejectUnauthorized: true, // REQUIRED for Aiven
   },
 });
 
