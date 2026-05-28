@@ -1,17 +1,23 @@
 require("dotenv").config();
 
 const express = require("express");
+const cors = require("cors");
 
-const db = require("./config/db");
+// ⚠️ DB import ONLY if needed
+// const db = require("./config/db");
 
 const githubRoutes = require("./routes/githubRoutes");
 
 const app = express();
 
+// middleware
+app.use(cors());
 app.use(express.json());
 
+// routes
 app.use("/api/github", githubRoutes);
 
+// health check
 app.get("/", (req, res) => {
   res.send("API Running");
 });
