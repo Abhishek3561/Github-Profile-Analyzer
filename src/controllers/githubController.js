@@ -1,4 +1,4 @@
-//const db = require("../config/db");
+const db = require("../config/db");
 
 const fetchGithubProfile = require("../services/githubService");
 
@@ -39,20 +39,20 @@ exports.analyzeProfile = async (req, res) => {
         top_repo = VALUES(top_repo)
     `;
 
-    // await db.query(sql, [
-    //   insights.github_id,
-    //   insights.username,
-    //   insights.name,
-    //   insights.bio,
-    //   insights.followers,
-    //   insights.following,
-    //   insights.public_repos,
-    //   insights.total_stars,
-    //   insights.total_forks,
-    //   insights.most_used_language,
-    //   insights.top_repo,
-    //   insights.account_created_at,
-    // ]);
+    await db.query(sql, [
+      insights.github_id,
+      insights.username,
+      insights.name,
+      insights.bio,
+      insights.followers,
+      insights.following,
+      insights.public_repos,
+      insights.total_stars,
+      insights.total_forks,
+      insights.most_used_language,
+      insights.top_repo,
+      insights.account_created_at,
+    ]);
 
     res.json({
       message: "Profile analyzed successfully",

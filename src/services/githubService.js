@@ -1,22 +1,20 @@
 const axios = require("axios");
 
 const fetchGithubProfile = async (username) => {
+  const headers = process.env.GITHUB_TOKEN
+    ? {
+        Authorization: `token ${process.env.GITHUB_TOKEN}`,
+      }
+    : {};
+
   const profileResponse = await axios.get(
     `https://api.github.com/users/${username}`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-      },
-    }
+    { headers }
   );
 
   const repoResponse = await axios.get(
     `https://api.github.com/users/${username}/repos`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-      },
-    }
+    { headers }
   );
 
   return {
