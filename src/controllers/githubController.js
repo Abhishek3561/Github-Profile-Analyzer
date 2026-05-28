@@ -10,10 +10,7 @@ exports.analyzeProfile = async (req, res) => {
 
     const data = await fetchGithubProfile(username);
 
-    const insights = calculateInsights(
-      data.profile,
-      data.repos
-    );
+    const insights = calculateInsights(data.profile, data.repos);
 
     const sql = `
       INSERT INTO github_profiles
@@ -32,7 +29,6 @@ exports.analyzeProfile = async (req, res) => {
         account_created_at
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-
       ON DUPLICATE KEY UPDATE
         followers = VALUES(followers),
         following = VALUES(following),
@@ -43,35 +39,26 @@ exports.analyzeProfile = async (req, res) => {
         top_repo = VALUES(top_repo)
     `;
 
-    db.query(
-      sql,
-      [
-        insights.github_id,
-        insights.username,
-        insights.name,
-        insights.bio,
-        insights.followers,
-        insights.following,
-        insights.public_repos,
-        insights.total_stars,
-        insights.total_forks,
-        insights.most_used_language,
-        insights.top_repo,
-        insights.account_created_at,
-      ],
-      (err) => {
-        if (err) {
-          return res.status(500).json({
-            error: err.message,
-          });
-        }
+    await db.query(sql, [
+      insights.github_id,
+      insights.username,
+      insights.name,
+      insights.bio,
+      insights.followers,
+      insights.following,
+      insights.public_repos,
+      insights.total_stars,
+      insights.total_forks,
+      insights.most_used_language,
+      insights.top_repo,
+      insights.account_created_at,
+    ]);
 
-        res.json({
-          message: "Profile analyzed successfully",
-          data: insights,
-        });
-      }
-    );
+    res.json({
+      message: "Profile analyzed successfully",
+      data: insights,
+    });
+
   } catch (error) {
     if (error.response?.status === 404) {
       return res.status(404).json({
@@ -85,32 +72,23 @@ exports.analyzeProfile = async (req, res) => {
   }
 };
 
-exports.getAllProfiles = (req, res) => {
-  const sql = "SELECT * FROM github_profiles";
-
-  db.query(sql, (err, results) => {
-    if (err) {
-      return res.status(500).json({
-        error: err.message,
-      });
-    }
-
+exports.getAllProfiles = async (req, res) => {
+  try {
+    const [results] = await db.query("SELECT * FROM github_profiles");
     res.json(results);
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-exports.getSingleProfile = (req, res) => {
-  const { username } = req.params;
+exports.getSingleProfile = async (req, res) => {
+  try {
+    const { username } = req.params;
 
-  const sql =
-    "SELECT * FROM github_profiles WHERE username = ?";
-
-  db.query(sql, [username], (err, results) => {
-    if (err) {
-      return res.status(500).json({
-        error: err.message,
-      });
-    }
+    const [results] = await db.query(
+      "SELECT * FROM github_profiles WHERE username = ?",
+      [username]
+    );
 
     if (results.length === 0) {
       return res.status(404).json({
@@ -119,5 +97,7 @@ exports.getSingleProfile = (req, res) => {
     }
 
     res.json(results[0]);
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
